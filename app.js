@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const path =require("path")
+const path = require("path")
 const day = require(__dirname + "/date.js");
 const _ = require("lodash");
 console.log(day);
@@ -17,7 +17,10 @@ mongoose.connect("mongodb+srv://admin-surya:turAScgDyTXryaI1@cluster0.el2dx.mong
 });
 app.set('view engine', 'ejs');
 const itemSchema = {
-  name: String,
+  name: {
+    type: String,
+    required: true
+  }
 };
 const Item = mongoose.model("item", itemSchema);
 const item1 = new Item({
@@ -32,13 +35,13 @@ const item3 = new Item({
 const defaultItems = [];
 
 const listSchema = {
-  name:String,
-  item:[itemSchema],
+  name: String,
+  item: [itemSchema],
 };
-const List = mongoose.model("list",listSchema);
+const List = mongoose.model("list", listSchema);
 
 app.get("/", function(req, res) {
-    let title=req.body.list;
+  let title = req.body.list;
   Item.find({}, function(err, foundItems) {
     // if (foundItems.length === 0) {
     //   Item.insertMany(defaultItems, function(err) {
@@ -49,80 +52,111 @@ app.get("/", function(req, res) {
     // }
     //
     //  else {
-      res.render("lists", {
-        listTitle: day,
-        items: foundItems
-      });
+    res.render("lists", {
+      listTitle: day,
+      items: foundItems
     });
+  });
 });
 
 app.post("/", function(req, res) {
-  let title =req.body.list;
+  let listTitleList = req.body.listTitle;
+  // console.log(listTitle1);
+  let listTitleItem = req.body.list;
+  // console.log(listTitle2);
   let itemName = req.body.itemlist;
-  const item = new Item({
-    name:itemName
-  });
-  if(title===day){
-  item.save();
-  res.redirect("/");
-}else{
-  List.findOne({name:title},function(err,foundList){
-        foundList.item.push(item);
-        foundList.save();
-        res.redirect("/"+title);
-  });
-}
+  if (listTitleItem) {
+    if (itemName === "") {
+      // console.log("String Empty")
+      res.redirect("/");
+    } else {
+      const item = new Item({
+        name: itemName
+      });
+
+      if (listTitleItem === day) {
+        item.save();
+        res.redirect("/");
+      } else {
+        List.findOne({
+          name: listTitleItem
+        }, function(err, foundList) {
+          foundList.item.push(item);
+          foundList.save();
+          res.redirect("/" + listTitleItem);
+        });
+      }
+    }
+  }else{
+    res.redirect("/"+listTitleList);
+  }
 
 });
-app.post("/delete",function(req,res){
-  const listTitle =req.body.listName;
-  const checkedItemID =req.body.checkbox;
-  if(listTitle===day){
-  Item.findByIdAndRemove(checkedItemID,function(err){
-    if(err)console.log(err);
-    else {
-    res.redirect("/");
+app.post("/delete", function(req, res) {
+  const listTitle = req.body.listName;
+  const checkedItemID = req.body.checkbox;
+  if (listTitle === day) {
+    Item.findByIdAndRemove(checkedItemID, function(err) {
+      if (err) console.log(err);
+      else {
+        res.redirect("/");
+      }
+    });
+  } else {
+    List.findOneAndUpdate({
+      name: listTitle
+    }, {
+      $pull: {
+        item: {
+          _id: checkedItemID
+        }
+      }
+    }, function(err) {
+      if (!err) {
+        res.redirect("/" + listTitle);
+      }
+    });
   }
-});
-}else{
-List.findOneAndUpdate({name:listTitle},{$pull:{item:{_id:checkedItemID}}},function(err){
-  if(!err){
-    res.redirect("/"+listTitle);
-  }
-});
-}
 });
 app.get("/:customTitle", function(req, res) {
 
   const title = _.capitalize(req.params.customTitle);
-  List.findOne({name:title},function(err,collectionItem){
-    if(!err){
-      if(!collectionItem){
+  List.findOne({
+    name: title
+  }, function(err, collectionItem) {
+    if (!err) {
+      if (!collectionItem) {
         const list = new List({
-          name:title,
-          item:defaultItems
+          name: title,
+          item: defaultItems
         });
         list.save();
-        res.redirect("/"+title);
-      }
-      else{
-        res.render("lists",{listTitle:collectionItem.name,items:collectionItem.item});
+        res.redirect("/" + title);
+      } else {
+        res.render("lists", {
+          listTitle: collectionItem.name,
+          items: collectionItem.item
+        });
       }
     }
   });
-  });
+});
 
 
-  //   Item.insertMany(customItems,function(err,customItem){
-  //     if(err) console.log(err)
-  //     else{
-  //       res.render("lists", {
-  //         listTitle: title,
-  //         items: customItem,
-  //       });
-  //     }
-  //   })
-  // }
+
+
+
+
+//   Item.insertMany(customItems,function(err,customItem){
+//     if(err) console.log(err)
+//     else{
+//       res.render("lists", {
+//         listTitle: title,
+//         items: customItem,
+//       });
+//     }
+//   })
+// }
 
 // });
 // app.post("/work",function(req,res){
@@ -130,6 +164,6 @@ app.get("/:customTitle", function(req, res) {
 //   workItems.push(item);
 //   res.redirect("/work");
 // });
-app.listen(process.env.PORT||3000, function() {
+app.listen(process.env.PORT || 3000, function() {
   console.log("Server success")
 })
