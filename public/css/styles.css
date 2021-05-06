@@ -1,7 +1,7 @@
 html {
   background-color: #E4E9FD;
   background-image: -webkit-linear-gradient(65deg, #393e46 50%, #eeeeee 50%);
-  min-height: 62.5rem;
+  min-height: 100%;
   font-family: 'Roboto', sans-serif;
 }
 body{
@@ -70,8 +70,8 @@ form.item {
 }
 
 button.addButton{
-  min-height: 3.125rem;
-  width: 3.125rem;
+  min-height: 14%;
+  width: 14%;
   border-radius: 50%;
   border-color: transparent;
   background-color: #393e46;
