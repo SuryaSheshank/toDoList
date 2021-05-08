@@ -1,0 +1,6 @@
+html{
+  background-color: black;
+}
+@media (max-width:900) {
+  html{background-color:white;}
+}

@@ -2,47 +2,57 @@
 
 <%-include("header") -%>
 <body>
-  <div class="box"  id="heading">
-    <h1 name="title"> <%= listTitle %> </h1>
-    <div class="dropright show">
-      <a class="btn btn-secondary dropdown-toggle addList" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        All Lists
-      </a>
-
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-
-          <!-- <a class="dropdown-item" href="#" id ="newList">Add a New List</a> -->
-          <!-- Button trigger modal -->
-<button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModalCenter">
-  Add/Find a List
-</button>
-<a class="dropdown-item" href="/">Today's List</a>
+    <div class="row">
+      <div class="col-lg-3 col-md-4 col-sm-6 titleRow">
+        <div class="box "  id="heading">
+          <h1 name="title"> <%= listTitle %> </h1>
+        </div>
       </div>
     </div>
-  </div>
 
-    <div class="box">
-        <%items.forEach(function(item){%>
+      <div class="dropright show" id ="listHead">
+        <a class="btn btn-secondary dropdown-toggle addList" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          All Lists
+        </a>
 
-        <form action="/delete" method="post">
-              <div class="item">
-          <input type="checkbox" onchange="this.form.submit()" name="checkbox" value="<%=item._id%>">
-          <p> <%= item.name %> </p>
-          </div>
-          <input type="hidden" name="listName" value="<%=listTitle%>">
-            </form>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 
-        <% }); %>
-
-
-
-
-    <form class="item" action="/" method="post">
-  <input  type="text" name="itemlist" placeholder="New Item" autocomplete="off">
-     <button type="submit" class="addButton" name="list" value="<%=listTitle%>">+</button>
-       </form>
-
+            <!-- <a class="dropdown-item" href="#" id ="newList">Add a New List</a> -->
+            <!-- Button trigger modal -->
+  <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModalCenter">
+    Add/Find a List
+  </button>
+  <a class="dropdown-item" href="/">Today's List</a>
+        </div>
       </div>
+<div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-6 itemRow ">
+      <div class="box ">
+          <%items.forEach(function(item){%>
+
+          <form action="/delete" method="post">
+                <div class="item ">
+            <input type="checkbox" onchange="this.form.submit()" name="checkbox" value="<%=item._id%>">
+            <p> <%= item.name %> </p>
+            </div>
+            <input type="hidden" name="listName" value="<%=listTitle%>">
+              </form>
+
+          <% }); %>
+
+
+
+
+      <form action="/" method="post">
+    <input  type="text" name="itemlist" placeholder="New Item" autocomplete="off">
+       <button type="submit" class="addButton" name="list" value="<%=listTitle%>"><i class="fas fa-plus fa-lg"></i></button>
+         </form>
+
+  </div>
+      </div>
+</div>
+
+
       <!-- Modal -->
           <form action="/" method="post">
       <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
